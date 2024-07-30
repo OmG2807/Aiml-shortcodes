@@ -1,40 +1,21 @@
-#backpropagation
-
 import numpy as np
-x = np.array([[2, 9], [1, 5], [3, 6]], dtype=float) / 9
-y = np.array([[92], [86], [89]], dtype=float) / 100
+x=np.array(([2,9],[1,5],[3,6]),dtype=float)
+y=np.array(([92],[86],[89]),dtype=float)
+x=x/np.amax(x,axis=0)
+y=y/100
 sigmoid = lambda x: 1 / (1 + np.exp(-x))
-deriv_sigmoid = lambda x: x * (1 - x)
-epoch = 5000
-lr = 0.1
-wh = np.random.uniform(size=(2, 3))
-bh =np.random.uniform(size=(1, 3))
-wout  = np.random.uniform(size=(3, 1))
-bout = np.random.uniform(size=(1, 1))
+derivatives_sigmoid = lambda x: x * (1 - x)
+epoch, lr = 5000, 0.1
+inputlayer_neurons, hiddenlayer_neurons, output_neurons = 2, 3, 1
+wh, bh = np.random.uniform(size=(inputlayer_neurons, hiddenlayer_neurons)), np.random.uniform(size=(1, hiddenlayer_neurons))
+wout, bout = np.random.uniform(size=(hiddenlayer_neurons, output_neurons)), np.random.uniform(size=(1, output_neurons))
 for _ in range(epoch):
     hlayer_act = sigmoid(np.dot(x, wh) + bh)
-    output = sigmoid(np.dot(hlayer_act, wout) + bout)
-
-    d_output = (y - output) * deriv_sigmoid(output)
-    d_hiddenlayer = np.dot(d_output, wout.T) * deriv_sigmoid(hlayer_act)
-
-    wout += np.dot(hlayer_act.T, d_output) * lr
-    wh += np.dot(x.T, d_hiddenlayer) * lr
-predicted_output = output
-print("Input (scaled):\n", x)
-print("Actual Output (scaled):\n", y)
-print("Predicted Output (scaled):\n", predicted_output)
-
-
-# Input (scaled):
-#  [[0.22222222 1.        ]
-#  [0.11111111 0.55555556]
-#  [0.33333333 0.66666667]]
-# Actual Output (scaled):
-#  [[0.92]
-#  [0.86]
-#  [0.89]]
-# Predicted Output (scaled):
-#  [[0.89706931]
-#  [0.88321736]
-#  [0.88981129]]
+    output = sigmoid(np.dot(hlayer_act, wout) + bout)  
+    d_output = (y - output) * derivatives_sigmoid(output)
+    d_hiddenlayer = d_output.dot(wout.T) * derivatives_sigmoid(hlayer_act)
+    wout += hlayer_act.T.dot(d_output) * lr
+    wh += x.T.dot(d_hiddenlayer) * lr
+print(f"Input:\n{x}")
+print(f"Actual Output:\n{y}")
+print(f"Predicted Output:\n{output}")
